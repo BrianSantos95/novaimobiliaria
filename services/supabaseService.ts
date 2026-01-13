@@ -97,29 +97,37 @@ export const dbUpdateBanners = async (banners: Banner[], type: 'PROMO' | 'EMBREV
     // Em produção, seria melhor UPSERT.
 
     // 1. Delete existing of this type
-    await supabase.from('banners').delete().eq('tipo', type);
+    const { error: deleteError } = await supabase.from('banners').delete().eq('tipo', type);
+    if (deleteError) {
+        console.error('Error deleting old banners:', deleteError);
+        // We throw to prevent partial state updates that might leave the user confused
+        throw new Error(`Failed to clear old banners: ${deleteError.message}`);
+    }
 
     // 2. Insert new ones
     if (banners.length > 0) {
         // Explicitly map ONLY database columns to execute a clean insert
         const toInsert = banners.map(b => ({
-            titulo: b.titulo,
-            imagem_desktop: b.imagem_desktop,
-            imagem_mobile: b.imagem_mobile,
-            link_acao: b.link_acao,
-            texto_alt: b.texto_alt,
-            ativo: b.ativo,
-            ordem: b.ordem,
+            titulo: b.titulo || '',
+            imagem_desktop: b.imagem_desktop || '',
+            imagem_mobile: b.imagem_mobile || '',
+            link_acao: b.link_acao || '',
+            texto_alt: b.texto_alt || '',
+            ativo: b.ativo === undefined ? true : b.ativo,
+            ordem: typeof b.ordem === 'number' ? b.ordem : 0,
             tipo: type
         }));
 
+        console.log('Inserting banners:', toInsert);
+
         const { error } = await supabase.from('banners').insert(toInsert);
         if (error) {
-            console.error('Supabase Error updating banners:', error);
-            throw error;
+            console.error('Supabase Error inserting banners:', error);
+            throw new Error(`Failed to insert banners: ${error.message}`);
         }
     }
 };
+
 
 export const dbAddLead = async (lead: Lead) => {
     // Mapear campos se necessário
