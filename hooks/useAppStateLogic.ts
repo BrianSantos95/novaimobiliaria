@@ -108,12 +108,22 @@ export const useAppStateLogic = () => {
 
     const setBannersPromocionais = useCallback(async (banners: Banner[]) => {
         setState(prev => ({ ...prev, bannersPromocionais: banners }));
-        await dbUpdateBanners(banners, 'PROMO');
+        try {
+            await dbUpdateBanners(banners, 'PROMO');
+        } catch (error: any) {
+            alert('Erro ao salvar banners promocionais: ' + (error.message || JSON.stringify(error)));
+            console.error(error);
+        }
     }, []);
 
     const setBannersEmBreve = useCallback(async (banners: Banner[]) => {
         setState(prev => ({ ...prev, bannersEmBreve: banners }));
-        await dbUpdateBanners(banners, 'EMBREVE');
+        try {
+            await dbUpdateBanners(banners, 'EMBREVE');
+        } catch (error: any) {
+            alert('Erro ao salvar banners em breve: ' + (error.message || JSON.stringify(error)));
+            console.error(error);
+        }
     }, []);
 
     const addLead = useCallback(async (lead: Lead) => {
