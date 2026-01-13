@@ -101,10 +101,25 @@ const PropertyModal: React.FC<{
     <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 py-6 md:p-10">
       <div className="absolute inset-0 bg-[#232323]/60 backdrop-blur-md" onClick={onClose}></div>
       <div className="relative bg-[#F1F1EE] w-full max-w-6xl max-h-full overflow-hidden rounded-xl shadow-2xl flex flex-col md:flex-row animate-in zoom-in-95 duration-500">
-        <div className="w-full md:w-1/2 h-[40vh] md:h-auto bg-slate-200 relative overflow-hidden shrink-0">
+        <div className="w-full md:w-1/2 h-[40vh] md:h-auto bg-slate-200 relative overflow-hidden shrink-0 group">
           <img src={property.imagens[activeImage]} className="w-full h-full object-cover transition-all duration-700" alt="" />
-          <button onClick={prevImage} className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-[#232323] shadow-lg"><ChevronLeft size={24} /></button>
-          <button onClick={nextImage} className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-[#232323] shadow-lg"><ChevronRight size={24} /></button>
+          <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-all"></div>
+
+          <button onClick={prevImage} className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-[#232323] shadow-lg hover:bg-white transition-all opacity-0 group-hover:opacity-100"><ChevronLeft size={24} /></button>
+          <button onClick={nextImage} className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-[#232323] shadow-lg hover:bg-white transition-all opacity-0 group-hover:opacity-100"><ChevronRight size={24} /></button>
+
+          {/* Thumbnails */}
+          <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2 px-4 overflow-x-auto no-scrollbar py-2">
+            {property.imagens.map((img, idx) => (
+              <button
+                key={idx}
+                onClick={() => setActiveImage(idx)}
+                className={`w-14 h-14 rounded-lg overflow-hidden border-2 transition-all shrink-0 ${activeImage === idx ? 'border-white scale-110 shadow-lg' : 'border-white/50 opacity-70 hover:opacity-100 hover:scale-105'}`}
+              >
+                <img src={img} className="w-full h-full object-cover" alt={`View ${idx + 1}`} />
+              </button>
+            ))}
+          </div>
         </div>
         <div className="flex-1 overflow-y-auto p-8 md:p-14 no-scrollbar bg-white">
           <div className="flex justify-between items-start mb-8">
