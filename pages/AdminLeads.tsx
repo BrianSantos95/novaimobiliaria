@@ -4,7 +4,13 @@ import { MessageCircle, ExternalLink, Trash2, Calendar, User } from 'lucide-reac
 import { useAppState } from '../hooks/useAppState';
 
 const AdminLeads: React.FC = () => {
-  const { leads } = useAppState();
+  const { leads, deleteLead } = useAppState();
+
+  const handleDelete = async (id: string) => {
+    if (confirm('Tem certeza que deseja excluir este contato?')) {
+      await deleteLead(id);
+    }
+  };
 
   return (
     <div className="p-8">
@@ -33,9 +39,9 @@ const AdminLeads: React.FC = () => {
                     </div>
                     <div>
                       <div className="font-black text-slate-900">{lead.nome}</div>
-                      <a 
-                        href={`https://wa.me/${lead.whatsapp.replace(/\D/g, '')}`} 
-                        target="_blank" 
+                      <a
+                        href={`https://wa.me/${lead.whatsapp.replace(/\D/g, '')}`}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="text-xs text-emerald-600 font-bold flex items-center gap-1 hover:underline"
                       >
@@ -56,7 +62,11 @@ const AdminLeads: React.FC = () => {
                   </div>
                 </td>
                 <td className="px-10 py-6 text-right">
-                  <button className="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-all">
+                  <button
+                    onClick={() => handleDelete(lead.id)}
+                    className="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
+                    title="Excluir Lead"
+                  >
                     <Trash2 size={20} />
                   </button>
                 </td>

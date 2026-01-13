@@ -13,6 +13,7 @@ import {
     dbUpdateLocalizacao,
     dbUpdateProvaSocial,
     dbAddLead,
+    dbDeleteLead,
     dbUpdateSettings
 } from '../services/supabaseService';
 import { INITIAL_IMOVEIS, INITIAL_REGIOES, INITIAL_BANNERS_PROMO, INITIAL_BANNERS_EM_BREVE, INITIAL_SETTINGS, INITIAL_FINANCIAMENTO, INITIAL_PROVA_SOCIAL, INITIAL_LOCALIZACAO } from '../constants';
@@ -131,6 +132,11 @@ export const useAppStateLogic = () => {
         await dbAddLead(lead);
     }, []);
 
+    const deleteLead = useCallback(async (id: string) => {
+        setState(prev => ({ ...prev, leads: prev.leads.filter(l => l.id !== id) }));
+        await dbDeleteLead(id);
+    }, []);
+
     const updateSettings = useCallback(async (settings: SiteSettings) => {
         setState(prev => ({ ...prev, settings }));
         await dbUpdateSettings(settings);
@@ -157,6 +163,7 @@ export const useAppStateLogic = () => {
         setBannersPromocionais,
         setBannersEmBreve,
         addLead,
+        deleteLead,
         updateSettings,
         setAuthenticated
     };

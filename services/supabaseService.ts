@@ -160,6 +160,11 @@ export const dbAddLead = async (lead: Lead) => {
     if (error) throw error;
 };
 
+export const dbDeleteLead = async (id: string) => {
+    const { error } = await supabase.from('leads').delete().eq('id', id);
+    if (error) throw error;
+};
+
 export const dbUpdateSettings = async (settings: SiteSettings) => {
     // Assumindo que sempre existe, update no primeiro id encontrado ou algo assim é perigoso em multi-row,
     // mas aqui é single-row policy.
