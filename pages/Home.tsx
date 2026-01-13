@@ -280,7 +280,7 @@ const Home: React.FC = () => {
       <section className="relative pt-32 pb-20 px-4 md:px-10 lg:px-12">
         <div className="max-w-[1400px] mx-auto relative h-[75vh] md:h-[85vh] rounded-[3rem] overflow-hidden group shadow-2xl">
           <img
-            src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80"
+            src={settings.heroBackgroundImage || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80"}
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-105"
             alt="Arquitetura de Luxo em Maceió"
           />

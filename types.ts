@@ -124,6 +124,7 @@ export interface SiteSettings {
   heroSubheadline: string;
   contactWhatsapp: string;
   propertiesHeaderImage?: string;
+  heroBackgroundImage?: string;
 }
 
 export interface AppState {

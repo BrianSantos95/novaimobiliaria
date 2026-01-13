@@ -30,14 +30,16 @@ const mapSettingsFromDB = (dbSettings: any): SiteSettings => ({
     heroHeadline: dbSettings?.hero_headline ?? INITIAL_SETTINGS.heroHeadline,
     heroSubheadline: dbSettings?.hero_subheadline ?? INITIAL_SETTINGS.heroSubheadline,
     contactWhatsapp: dbSettings?.contact_whatsapp ?? INITIAL_SETTINGS.contactWhatsapp,
-    propertiesHeaderImage: dbSettings?.properties_header_image
+    propertiesHeaderImage: dbSettings?.properties_header_image,
+    heroBackgroundImage: dbSettings?.hero_background_image
 });
 
 const mapSettingsToDB = (settings: SiteSettings) => ({
     hero_headline: settings.heroHeadline,
     hero_subheadline: settings.heroSubheadline,
     contact_whatsapp: settings.contactWhatsapp,
-    properties_header_image: settings.propertiesHeaderImage
+    properties_header_image: settings.propertiesHeaderImage,
+    hero_background_image: settings.heroBackgroundImage
 });
 
 // --- Fetchers ---
