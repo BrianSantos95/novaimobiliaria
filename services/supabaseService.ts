@@ -26,6 +26,22 @@ const mapImovelToDB = (imovel: Imovel) => ({
 
 // --- Fetchers ---
 
+const mapSettingsFromDB = (dbSettings: any): SiteSettings => ({
+    heroHeadline: dbSettings?.hero_headline ?? INITIAL_SETTINGS.heroHeadline,
+    heroSubheadline: dbSettings?.hero_subheadline ?? INITIAL_SETTINGS.heroSubheadline,
+    contactWhatsapp: dbSettings?.contact_whatsapp ?? INITIAL_SETTINGS.contactWhatsapp,
+    propertiesHeaderImage: dbSettings?.properties_header_image
+});
+
+const mapSettingsToDB = (settings: SiteSettings) => ({
+    hero_headline: settings.heroHeadline,
+    hero_subheadline: settings.heroSubheadline,
+    contact_whatsapp: settings.contactWhatsapp,
+    properties_header_image: settings.propertiesHeaderImage
+});
+
+// --- Fetchers ---
+
 export const fetchFullState = async (): Promise<AppState> => {
     const [
         { data: imoveis },
@@ -52,7 +68,7 @@ export const fetchFullState = async (): Promise<AppState> => {
         regioes: regioes || [],
         bannersPromocionais: banners ? banners.filter((b: any) => b.tipo === 'PROMO') : [],
         bannersEmBreve: banners ? banners.filter((b: any) => b.tipo === 'EMBREVE') : [],
-        settings: siteSettings || INITIAL_SETTINGS,
+        settings: siteSettings ? mapSettingsFromDB(siteSettings) : INITIAL_SETTINGS,
         financiamento: financiamento || INITIAL_FINANCIAMENTO,
         provaSocial: provaSocial || INITIAL_PROVA_SOCIAL,
         localizacao: localizacao || INITIAL_LOCALIZACAO,
@@ -149,9 +165,9 @@ export const dbUpdateSettings = async (settings: SiteSettings) => {
     // Vamos tentar update em tudo (já que só tem 1 linha)
     const { data } = await supabase.from('site_settings').select('id').single();
     if (data) {
-        await supabase.from('site_settings').update(settings).eq('id', data.id);
+        await supabase.from('site_settings').update(mapSettingsToDB(settings)).eq('id', data.id);
     } else {
-        await supabase.from('site_settings').insert(settings);
+        await supabase.from('site_settings').insert(mapSettingsToDB(settings));
     }
 };
 
