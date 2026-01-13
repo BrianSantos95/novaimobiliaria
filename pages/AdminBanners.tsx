@@ -1,12 +1,14 @@
 
 import React, { useState } from 'react';
-import { Save, Image as ImageIcon, Plus, Trash2, Info, Monitor, Smartphone, Layout } from 'lucide-react';
+import { Save, Image as ImageIcon, Plus, Trash2, Info, Monitor, Smartphone, Layout, Upload, Loader } from 'lucide-react';
 import { useAppState } from '../hooks/useAppState';
 import { Banner } from '../types';
+import { uploadImage } from '../services/supabaseService';
 
 const AdminBanners: React.FC = () => {
   const { bannersPromocionais, bannersEmBreve, setBannersPromocionais, setBannersEmBreve } = useAppState();
   const [activeTab, setActiveTab] = useState<'PROMO' | 'EMBREVE'>('PROMO');
+  const [uploading, setUploading] = useState<string | null>(null);
 
   const handleSave = (type: 'PROMO' | 'EMBREVE', banners: Banner[]) => {
     if (type === 'PROMO') setBannersPromocionais(banners);
@@ -40,6 +42,18 @@ const AdminBanners: React.FC = () => {
       setLocalBanners(localBanners.filter((_, i) => i !== idx));
     };
 
+    const handleUpload = async (idx: number, field: 'imagem_desktop' | 'imagem_mobile', file: File) => {
+      try {
+        setUploading(`${idx}-${field}`);
+        const url = await uploadImage(file);
+        updateBanner(idx, field, url);
+      } catch (error) {
+        alert('Erro ao fazer upload da imagem.' + error);
+      } finally {
+        setUploading(null);
+      }
+    };
+
     return (
       <div className="space-y-10">
         <div className="flex justify-between items-center">
@@ -65,14 +79,32 @@ const AdminBanners: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Desktop Image */}
                 <div>
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block flex items-center gap-2"><Monitor size={14}/> Imagem Desktop (1920x400)</label>
-                  <input type="text" value={banner.imagem_desktop} onChange={e => updateBanner(idx, 'imagem_desktop', e.target.value)} placeholder="https://..." className="w-full bg-slate-50 border border-slate-100 rounded-xl px-6 py-4 outline-none focus:border-emerald-500 font-medium" />
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block flex items-center gap-2"><Monitor size={14} /> Imagem Desktop (1920x400)</label>
+                  <div className="flex gap-2">
+                    <input type="text" value={banner.imagem_desktop} onChange={e => updateBanner(idx, 'imagem_desktop', e.target.value)} placeholder="https://..." className="w-full bg-slate-50 border border-slate-100 rounded-xl px-6 py-4 outline-none focus:border-emerald-500 font-medium text-sm" />
+                    <label className="bg-slate-100 hover:bg-slate-200 cursor-pointer rounded-xl px-4 flex items-center justify-center transition-all min-w-[60px]">
+                      {uploading === `${idx}-imagem_desktop` ? <Loader size={20} className="animate-spin text-emerald-600" /> : <Upload size={20} className="text-slate-500" />}
+                      <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleUpload(idx, 'imagem_desktop', e.target.files[0])} disabled={!!uploading} />
+                    </label>
+                  </div>
+                  {banner.imagem_desktop && <img src={banner.imagem_desktop} alt="Preview" className="mt-4 w-full h-24 object-cover rounded-xl" />}
                 </div>
+
+                {/* Mobile Image */}
                 <div>
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block flex items-center gap-2"><Smartphone size={14}/> Imagem Mobile</label>
-                  <input type="text" value={banner.imagem_mobile} onChange={e => updateBanner(idx, 'imagem_mobile', e.target.value)} placeholder="https://..." className="w-full bg-slate-50 border border-slate-100 rounded-xl px-6 py-4 outline-none focus:border-emerald-500 font-medium" />
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block flex items-center gap-2"><Smartphone size={14} /> Imagem Mobile</label>
+                  <div className="flex gap-2">
+                    <input type="text" value={banner.imagem_mobile} onChange={e => updateBanner(idx, 'imagem_mobile', e.target.value)} placeholder="https://..." className="w-full bg-slate-50 border border-slate-100 rounded-xl px-6 py-4 outline-none focus:border-emerald-500 font-medium text-sm" />
+                    <label className="bg-slate-100 hover:bg-slate-200 cursor-pointer rounded-xl px-4 flex items-center justify-center transition-all min-w-[60px]">
+                      {uploading === `${idx}-imagem_mobile` ? <Loader size={20} className="animate-spin text-emerald-600" /> : <Upload size={20} className="text-slate-500" />}
+                      <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleUpload(idx, 'imagem_mobile', e.target.files[0])} disabled={!!uploading} />
+                    </label>
+                  </div>
+                  {banner.imagem_mobile && <img src={banner.imagem_mobile} alt="Preview" className="mt-4 w-full h-24 object-cover rounded-xl" />}
                 </div>
+
                 <div>
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block">Texto Alt / SEO</label>
                   <input type="text" value={banner.texto_alt} onChange={e => updateBanner(idx, 'texto_alt', e.target.value)} className="w-full bg-slate-50 border border-slate-100 rounded-xl px-6 py-4 outline-none focus:border-emerald-500 font-medium" />
