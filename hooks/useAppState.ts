@@ -28,7 +28,7 @@ export const useAppState = () => {
     financiamento: INITIAL_FINANCIAMENTO,
     provaSocial: INITIAL_PROVA_SOCIAL,
     localizacao: INITIAL_LOCALIZACAO,
-    isAuthenticated: false
+    isAuthenticated: localStorage.getItem('prime_auth') === 'true'
   });
 
   const [loading, setLoading] = useState(true);
@@ -39,10 +39,12 @@ export const useAppState = () => {
       try {
         setLoading(true);
         const data = await fetchFullState();
-        setState(prev => ({ ...data, isAuthenticated: prev.isAuthenticated })); // Keep auth state if handled elsewhere or just init
+        setState(prev => ({
+          ...data,
+          isAuthenticated: localStorage.getItem('prime_auth') === 'true'
+        }));
       } catch (error) {
         console.error("Failed to load data from Supabase:", error);
-        // Fallback or Alert? For now silent fail or check logs.
       } finally {
         setLoading(false);
       }
@@ -126,6 +128,9 @@ export const useAppState = () => {
 
   const setAuthenticated = useCallback((val: boolean) => {
     setState(prev => ({ ...prev, isAuthenticated: val }));
+    localStorage.setItem('prime_auth', String(val));
+    // Se estiver deslogando, limpar
+    if (!val) localStorage.removeItem('prime_auth');
   }, []);
 
   return {
